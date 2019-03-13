@@ -22,11 +22,11 @@ myApp.controller('billCtrl', function($scope, $http, $filter, $location) {
 	}
 	
 	//下拉框
+	$scope.bill.type=1;
 	$scope.types=[{"id":0,"name":"未分类"},
 		{"id":1,"name":"个人消费"},
 		{"id":2,"name":"共同消费"},
 		{"id":3,"name":"家庭成员消费(如代缴话费等)	"}];
-	$scope.bill.type=0;
 	
 	$scope.bill.signTime=new Date();
 	$("input[name='bill.signTime']").datetimepicker({
@@ -48,7 +48,7 @@ myApp.controller('billCtrl', function($scope, $http, $filter, $location) {
 		if($scope.uname!='')$scope.bill.name=$scope.uname;
 		$scope.bill.id="";
 		$scope.bill.money="";
-		$scope.bill.type=0;
+		$scope.bill.type=1;
 		$scope.bill.prepaid=0;
 		$scope.bill.mark="";
 		$("input[name='bill.signTime']").datetimepicker('setDate',new Date());
