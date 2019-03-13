@@ -12,68 +12,82 @@ myApp.config([ '$locationProvider', function($locationProvider) {
 
 myApp.controller('billCtrl', function($scope, $http, $filter, $location) {
 
-	$http.get(ROOT + "/bill/getBills").success(function(response) {
-		$scope.list = response.content;
-	});
-
+	$scope.bill={};
+	
+	$scope.uname="";
 	//获取地址栏参数的方法
-	$scope.uname = '';
 	if ($location.search().u) {
-		$scope.uname = $location.search().u;
+		$scope.bill.name = $location.search().u;
+		$scope.uname=$location.search().u;
 	}
-
-	$scope.fName = '';
-	$scope.lName = '';
-	$scope.passw1 = '';
-	$scope.passw2 = '';
-
-	$scope.edit = true;
-	$scope.error = false;
-	$scope.incomplete = false;
 	
-	$scope.edit= function(id) {
-		if (id == 'new') {
-			$scope.edit = true;
-			$scope.incomplete = true;
-			$scope.fName = '';
-			$scope.lName = '';
-		} else {
-			$scope.edit = false;
-			$scope.fName = $scope.list[id - 1].fName;
-			$scope.lName = $scope.list[id - 1].lName;
+	//下拉框
+	$scope.types=[{"id":0,"name":"未分类"},
+		{"id":1,"name":"个人消费"},
+		{"id":2,"name":"共同消费"},
+		{"id":3,"name":"家庭成员消费(如代缴话费等)	"}];
+	$scope.bill.type=0;
+	
+	$scope.bill.signTime=new Date();
+	$("input[name='bill.signTime']").datetimepicker({
+		language: 'zh-CN',
+//		minuteStep:30,
+		minView:2,
+		format: "yyyy-mm-dd",//hh:ii
+		autoclose: true,
+		todayBtn: true,
+		todayHighlight:true
+	}).on('changeDate', function(ev){
+		if(ev.date){
+			$scope.bill.signTime=ev.date;
 		}
-	};
+	});
 	
+	//重置
 	$scope.reset=function(){
-		$scope.incomplete = true;
-		$scope.edit = false;
+		if($scope.uname!='')$scope.bill.name=$scope.uname;
+		$scope.bill.id="";
+		$scope.bill.money="";
+		$scope.bill.type=0;
+		$scope.bill.prepaid=0;
+		$scope.bill.mark="";
+		$("input[name='bill.signTime']").datetimepicker('setDate',new Date());
+	}
+	$scope.reset();
+	
+	//编辑
+	$scope.edit= function(id) {
+		if (id>0) {
+			$scope.bill.id = $scope.list[id-1].id;
+			$scope.bill.name = $scope.list[id-1].name;
+			$scope.bill.money = $scope.list[id-1].money;
+			$scope.bill.mark = $scope.list[id-1].mark;
+			$scope.bill.type = $scope.list[id-1].type;
+			$scope.bill.prepaid=($scope.list[id-1].prepaid==0)?false:true;
+			$("input[name='bill.signTime']").datetimepicker('setDate',new Date($scope.list[id-1].signTime));
+			
+		}
+	};
+	
+	//保存
+	$scope.save=function(){
+		$scope.bill.prepaid=($scope.bill.prepaid)?1:0;
+		$.post(ROOT + "/bill/save",$scope.bill,function(res){
+			$scope.table();
+		});
+	}
+	
+
+	$scope.$watch('bill.money', function() {
 		
-	};
-
-	$scope.$watch('passw1', function() {
-		$scope.test();
 	});
-	$scope.$watch('passw2', function() {
-		$scope.test();
-	});
-	$scope.$watch('fName', function() {
-		$scope.test();
-	});
-	$scope.$watch('lName', function() {
-		$scope.test();
-	});
-
-	$scope.test = function() {
-		if ($scope.passw1 !== $scope.passw2) {
-			$scope.error = true;
-		} else {
-			$scope.error = false;
-		}
-		$scope.incomplete = false;
-		if ($scope.edit
-				&& (!$scope.fName.length || !$scope.lName.length
-						|| !$scope.passw1.length || !$scope.passw2.length)) {
-			$scope.incomplete = true;
-		}
-	};
+	
+	$scope.table=function(){
+		$http.get(ROOT + "/bill/getBills").success(function(res) {
+			$scope.list = res.content;
+		});
+		$scope.reset();
+	}
+	$scope.table();
+	
 })

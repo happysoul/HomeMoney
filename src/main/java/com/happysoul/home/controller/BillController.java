@@ -1,5 +1,7 @@
 package com.happysoul.home.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +43,25 @@ public class BillController {
 		Page<Bill> page = billDao.findAll(Example.of(bill, matcher), pageable);
 		
 		return page;
+	}
+	
+	@PostMapping("save")
+	public void save(Bill bill) {
+		
+		if(bill.getId()==null) {
+			bill.setCreateTime(new Date());
+			bill.setSignTime(new Date());
+			billDao.save(bill);
+		}else {
+			Bill b = billDao.getOne(bill.getId());
+			b.setSignTime(bill.getSignTime());
+			b.setName(bill.getName());
+			b.setMoney(bill.getMoney());
+			b.setPrepaid(bill.getPrepaid());
+			b.setMark(bill.getMark());
+			billDao.save(b);
+		}
+		
 	}
 	
 }
