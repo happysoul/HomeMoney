@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/angular.js/1.4.6/angular.min.js"></script>
+<script src="https://cdn.staticfile.org/angular.js/1.4.6/i18n/angular-locale_zh-cn.js"></script>
+<script src="base.js"></script>
+
+</head>
+<body ng-app="myApp" ng-controller="billCtrl">
+
+	<div class="container">
+
+		<h3>统计信息</h3>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>姓名</th>
+					<th>花费</th>
+					<th>时间</th>
+					<th>创建时间</th>
+					<th ng-show="uname!=''">编辑</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="l in list">
+					<td>{{ l.name }}</td>
+					<td>{{ l.money }}</td>
+					<td>{{ l.signTime|date:'yyyy-MM-dd HH:mm:ss':_timezone}}</td>
+					<td>{{ l.createTime|date:'yyyy-MM-dd HH:mm:ss':_timezone}}</td>
+					<td ng-show="uname!=''">
+						<button class="btn" ng-click="edit(l.id)">
+							<span class="glyphicon glyphicon-pencil"></span>编辑
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<hr>
+
+		<div ng-show="uname!=''">
+			<h3 ng-show="edit">{{uname}} 新建:</h3>
+			<h3 ng-hide="edit">{{uname}} 编辑:</h3>
+			<br>
+			
+			
+			<form class="form-horizontal">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">姓名:</label>
+				<div class="col-sm-10">
+					<input type="text" ng-model="uname" readOnly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">花费:</label>
+				<div class="col-sm-10">
+					<input type="text" ng-model="money" ng-disabled="!edit" placeholder="姓">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">密码:</label>
+				<div class="col-sm-10">
+					<input type="password" ng-model="passw1" placeholder="密码">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">重复密码:</label>
+				<div class="col-sm-10">
+					<input type="password" ng-model="passw2" placeholder="重复密码">
+				</div>
+			</div>
+			</form>
+			
+			
+			
+			
+			
+			<button class="btn btn-success" ng-click="reset()">
+				<span class="glyphicon glyphicon-remove-sign"></span>清空
+			</button>
+			<button class="btn btn-success" ng-click="save()">
+				<span class="glyphicon glyphicon-save"></span>保存
+			</button>
+			
+			<hr>
+		</div>
+
+
+		
+
+
+	</div>
+
+	<script src="bill.js"></script>
+</body>
+</html>
