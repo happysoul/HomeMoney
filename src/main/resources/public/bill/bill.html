@@ -3,15 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
 <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
-<script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
 <script src="https://cdn.staticfile.org/angular.js/1.4.6/angular.min.js"></script>
 <script src="https://cdn.staticfile.org/angular.js/1.4.6/i18n/angular-locale_zh-cn.js"></script>
 
 <link rel="stylesheet" href="../datetimepicker/bootstrap-datetimepicker.min.css">
 <script src="../datetimepicker/bootstrap-datetimepicker.min.js"></script>
 <script src="../datetimepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<link rel="stylesheet" href="../bootstrap-table/bootstrap-table.min.css">
+<script src="../bootstrap-table/bootstrap-table.min.js"></script>
+<script src="../bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 
 <script src="base.js"></script>
 
@@ -22,97 +26,84 @@
 
 		<h3>统计信息</h3>
 
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>姓名</th>
-					<th>花费</th>
-					<th>时间</th>
-					<th>创建时间</th>
-					<th ng-show="uname!=''">编辑</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="l in list">
-					<td>{{ l.name }}</td>
-					<td>{{ l.money }}</td>
-					<td>{{ l.signTime|date:'yyyy-MM-dd HH:mm:ss'}}</td>
-					<td>{{ l.createTime|date:'yyyy-MM-dd HH:mm:ss'}}</td>
-					<td ng-show="uname!=''">
-						<button class="btn" ng-click="edit(l.id)">
-							<span class="glyphicon glyphicon-pencil"></span>编辑
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<hr>
-
-		<div ng-show="uname!=''">
-			<h3 ng-show="bill.id==''">{{bill.name}} 新建:</h3>
-			<h3 ng-hide="bill.id==''">{{bill.name}} 编辑:</h3>
-			<br>
-			
-			
-			<form class="form-horizontal">
-			<input type="hidden" ng-model="bill.id" readOnly>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">姓名:</label>
-				<div class="col-sm-4">
-					<input class="form-control" type="text" ng-model="bill.name" readOnly>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">时间:</label>
-				<div class="col-sm-4">
-					<input class="form-control" type="text" name="bill.signTime" value={{bill.signTime|date:'yyyy-MM-dd'}}>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">花费:</label>
-				<div class="col-sm-4">
-					<input class="form-control" type="text" name="bill.money" ng-model="bill.money" required placeholder="0.00">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">花费类型:</label>
-				<div class="col-sm-4">
-					<select class="form-control" ng-model="bill.type" ng-options="item.id as item.name for item in types"></select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">是否是预付费(储值类):</label>
-				<div class="col-sm-1">
-					<input class="form-control" type="checkbox" ng-model="bill.prepaid">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-2 control-label">备注:</label>
-				<div class="col-sm-4">
-					<input class="form-control" type="text" ng-model="bill.mark" placeholder="花费备注">
-				</div>
-			</div>
-			</form>
-			
-			
-			
-			
-			
-			<button class="btn btn-success" ng-click="reset()">
-				<span class="glyphicon glyphicon-remove-sign"></span>清空
-			</button>
-			<button class="btn btn-success" ng-click="save()">
-				<span class="glyphicon glyphicon-save"></span>保存
-			</button>
-			
-			<hr>
+		<div id="toolbar" class="btn-group">
+			<!-- 注意修改data-target -->
+			<button data-target="#bill_model" type="button" class="btn btn-default" data-toggle="modal" ng-click="showModal()">新建</button>
 		</div>
+		<table id="tb_bill"></table>
 
 
-		
+		<!-- 模态框（Modal） -->
+		<div class="modal fade" id="bill_model" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" ng-show="bill.id==''">{{bill.name}}
+							新建:</h4>
+						<h4 class="modal-title" ng-hide="bill.id==''">{{bill.name}}
+							编辑:</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal">
+							<input type="hidden" ng-model="bill.id" readOnly>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">姓名:</label>
+								<div class="col-sm-6">
+									<input class="form-control" type="text" ng-model="bill.name"
+										readOnly>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">时间:</label>
+								<div class="col-sm-6">
+									<input class="form-control" type="text" name="bill.signTime"
+										value={{bill.signTime|date:'yyyy-MM-dd'}}>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">花费:</label>
+								<div class="col-sm-6">
+									<input class="form-control" type="text" name="bill.money"
+										ng-model="bill.money" required placeholder="0.00">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">花费类型:</label>
+								<div class="col-sm-6">
+									<select class="form-control" ng-model="bill.type"
+										ng-options="item.id as item.name for item in types"></select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">预付费(储值类):</label>
+								<div class="col-sm-2">
+									<input class="form-control" type="checkbox"
+										ng-model="bill.prepaid">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">备注:</label>
+								<div class="col-sm-6">
+									<input class="form-control" type="text" ng-model="bill.mark"
+										placeholder="花费备注">
+								</div>
+							</div>
+						</form>
 
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" ng-click="save()">提交</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
 
+		</div>
 	</div>
 
 	<script src="bill.js"></script>
