@@ -23,6 +23,8 @@ myApp.controller('billCtrl', function($scope, $http, $filter, $compile, $locatio
 	if ($location.search().u) {
 		$scope.bill.name = $location.search().u;
 		$scope.uname=$location.search().u;
+	}else{
+		$("#toolbar").hide();
 	}
 	
 	//下拉框
